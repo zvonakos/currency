@@ -1,7 +1,7 @@
 import requests
-from celery import shared_task
-
-from rate import model_choices as mch
+from celery import shared_task  # noqa
+from rate import model_choices as mch  # noqa
+from rate.models import Rate
 from rate.utils import to_decimal
 
 
@@ -66,14 +66,14 @@ def parse_monobank():
         '978': mch.CURRENCY_TYPE_EUR,
     }
 
-    for item_mono in response.json():
-        if item_mono['currencyCodeA'] not in currency_type_mapper:
+    for item in response.json().items():
+        if item['currencyCodeA'] not in currency_type_mapper:
             continue
 
-    currency_type = currency_type_mapper[item_mono['currencyCodeA']]
+    currency_type = currency_type_mapper[item['currencyCodeA']]
 
     # BUY
-    amount = to_decimal(item_mono['rateBuy'])
+    amount = to_decimal(item['rateBuy'])
 
     last = Rate.objects.filter(
         source=mch.SOURCE_MONOBANK,
@@ -90,7 +90,7 @@ def parse_monobank():
         )
 
     # SALE
-    amount = to_decimal(item_mono['rateSell'])
+    amount = to_decimal(item['rateSell'])
 
     last = Rate.objects.filter(
         source=mch.SOURCE_MONOBANK,
@@ -108,106 +108,36 @@ def parse_monobank():
 
 
 @shared_task
-def parse_vkurseusd():
-    from rate.models import Rate
-    url_vkurseusd = "http://vkurse.dp.ua/course.json"
-    response = requests.get(url_vkurseusd)
+def parse_vkurse():
+    url = "http://vkurse.dp.ua/course.json"
+    response = requests.get(url)
     currency_type_mapper = {
-        'USD': mch.CURRENCY_TYPE_USD
+        'Dollar': mch.CURRENCY_USD,
+        'Euro': mch.CURRENCY_EUR,
     }
-
-    for item_vkusd in response.json():
-        if item_vkusd['Dollar'] not in currency_type_mapper:
+    for vk, value in response.json().items():
+        if vk not in currency_type_mapper:
             continue
 
-    currency_type = currency_type_mapper[item_vkusd['Dollar']]
+        buy = to_decimal(value['buy'])
+        sale = to_decimal(value['sale'])
 
-    # BUYUSD
-    amount = to_decimal(item_vkusd['buy'])
-
-    last = Rate.objects.filter(
-        source=mch.SOURCE_VKURSE,
-        currency_type=currency_type,
-        type=mch.RATE_TYPE_BUY,
-    ).last()
-
-    if last is not None or last.amount != amount:
-        Rate.objects.create(
-            amount=amount,
+        last = Rate.objects.filter(
             source=mch.SOURCE_VKURSE,
-            currency_type=currency_type,
-            type=mch.RATE_TYPE_BUY,
-        )
+            currency=currency_type_mapper[vk],
+        ).last()
 
-    # SALEUSD
-    amount = to_decimal(item_vkusd['Sale'])
-
-    last = Rate.objects.filter(
-        source=mch.SOURCE_VKURSE,
-        currency_type=currency_type,
-        type=mch.RATE_TYPE_SALE,
-    ).last()
-
-    if last is not None or last.amount != amount:
-        Rate.objects.create(
-            amount=amount,
-            source=mch.SOURCE_VKURSE,
-            currency_type=currency_type,
-            type=mch.RATE_TYPE_SALE,
-        )
-
-
-@shared_task
-def parse_vkurseeur():
-    from rate.models import Rate
-    url_vkurseeur = "http://vkurse.dp.ua/course.json"
-    response = requests.get(url_vkurseeur)
-    currency_type_mapper = {
-        'Euro': mch.CURRENCY_TYPE_EUR
-    }
-
-    for item_vkeur in response.json():
-        if item_vkeur['Euro'] not in currency_type_mapper:
-            continue
-
-    currency_type = currency_type_mapper[item_vkeur['Euro']]
-
-    # BUYEUR
-    amount = to_decimal(item_vkeur['Euro'])
-
-    last = Rate.objects.filter(
-        source=mch.SOURCE_VKURSE,
-        currency_type=currency_type,
-        type=mch.RATE_TYPE_BUY,
-    ).last()
-
-    if last is not None or last.amount != amount:
-        Rate.objects.create(
-            amount=amount,
-            source=mch.SOURCE_VKURSE,
-            currency_type=currency_type,
-            type=mch.RATE_TYPE_BUY,
-        )
-
-    # SALEEUR
-    amount = to_decimal(item_vkeur['Sale'])
-
-    last = Rate.objects.filter(
-        source=mch.SOURCE_VKURSE,
-        currency_type=currency_type,
-        type=mch.RATE_TYPE_SALE,
-    ).last()
-
-    if last is not None or last.amount != amount:
-        Rate.objects.create(
-            amount=amount,
-            source=mch.SOURCE_VKURSE,
-            currency_type=currency_type,
-            type=mch.RATE_TYPE_SALE,
-        )
+        if last is None or last.buy != buy or last.sale != sale:
+            Rate.objects.create(
+                buy=buy,
+                sale=sale,
+                source=mch.SOURCE_VKURSE,
+                currency=currency_type_mapper[vk],
+            )
 
 
 @shared_task
 def parse_():
     parse_monobank.delay()
     parse_privatbank.delay()
+    parse_vkurse.delay()
