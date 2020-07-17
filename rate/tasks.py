@@ -62,15 +62,16 @@ def parse_monobank():
     url_mono = "https://api.monobank.ua/bank/currency"
     response = requests.get(url_mono)
     currency_type_mapper = {
-        '840': mch.CURRENCY_TYPE_USD,
-        '978': mch.CURRENCY_TYPE_EUR,
+        840: mch.CURRENCY_TYPE_USD,
+        978: mch.CURRENCY_TYPE_EUR,
     }
 
-    for item in response.json().items():
+    for item in response.json():
+
         if item['currencyCodeA'] not in currency_type_mapper:
             continue
-
-    currency_type = currency_type_mapper[item['currencyCodeA']]
+        if item['currencyCodeB'] == 980:
+            currency_type = currency_type_mapper[item['currencyCodeA']]
 
     # BUY
     amount = to_decimal(item['rateBuy'])
@@ -109,30 +110,48 @@ def parse_monobank():
 
 @shared_task
 def parse_vkurse():
-    url = "http://vkurse.dp.ua/course.json"
-    response = requests.get(url)
+    url_vk = "http://vkurse.dp.ua/course.json"
+    response = requests.get(url_vk)
     currency_type_mapper = {
-        'Dollar': mch.CURRENCY_USD,
-        'Euro': mch.CURRENCY_EUR,
+        'Dollar': mch.CURRENCY_TYPE_USD,
+        'Euro': mch.CURRENCY_TYPE_EUR,
     }
-    for vk, value in response.json().items():
-        if vk not in currency_type_mapper:
+    for item in response:
+        if item not in currency_type_mapper:
             continue
 
-        buy = to_decimal(value['buy'])
-        sale = to_decimal(value['sale'])
+        currency_type = currency_type_mapper[item]
 
+        # buy
+        rate = to_decimal(response[item]['buy'])
         last = Rate.objects.filter(
             source=mch.SOURCE_VKURSE,
-            currency=currency_type_mapper[vk],
+            currency_type=currency_type,
+            rate_type=mch.RATE_TYPE_BUY,
         ).last()
 
-        if last is None or last.buy != buy or last.sale != sale:
+        if last is None or last.rate != rate:
             Rate.objects.create(
-                buy=buy,
-                sale=sale,
+                rate=rate,
                 source=mch.SOURCE_VKURSE,
-                currency=currency_type_mapper[vk],
+                currency_type=currency_type,
+                rate_type=mch.RATE_TYPE_BUY,
+            )
+
+        # sale
+        rate = to_decimal(response[item]['sale'])
+        last = Rate.objects.filter(
+            source=mch.SOURCE_VKURSE,
+            currency_type=currency_type,
+            rate_type=mch.RATE_TYPE_SALE,
+        ).last()
+
+        if last is None or last.rate != rate:
+            Rate.objects.create(
+                rate=rate,
+                source=mch.SOURCE_VKURSE,
+                currency_type=currency_type,
+                rate_type=mch.RATE_TYPE_SALE,
             )
 
 
