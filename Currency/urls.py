@@ -3,6 +3,8 @@ from django.views.generic import TemplateView  # noqa
 from django.conf import settings  # noqa
 from django.urls import include, path  # noqa
 
+from Currency import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -18,3 +20,8 @@ if settings.DEBUG:
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+
+
+handler404 = views.handler404
+handler500 = views.handler500
+
