@@ -16,8 +16,6 @@ class RateList(ListView):
 
 
 class LatestRatesView(TemplateView):
-
-
     template_name = 'latest-rates.html'
 
     def get_context_data(self, **kwargs):

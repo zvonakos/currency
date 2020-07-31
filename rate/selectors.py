@@ -1,8 +1,9 @@
 import hashlib
+
 from django.core.cache import cache
 
-from rate.models import Rate
 from rate import model_choices as mch
+from rate.models import Rate
 
 
 def rate_cache_key(source, type_, currency):
@@ -22,7 +23,7 @@ def get_latest_rates():
             for type_ in mch.RATE_TYPE_CHOICES:  # type
                 type_ = type_[0]
 
-                key = rate_cache_key(source,type_,currency)
+                key = rate_cache_key(source, type_, currency)
                 cached_rate = cache.get(key)
 
                 # no rate in cache
