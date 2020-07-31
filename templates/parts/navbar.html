@@ -1,3 +1,6 @@
+{% load active_tab %}
+
+
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="{% url 'index' %}">Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -5,12 +8,16 @@
     </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item active">
+          <li class="nav-item {{ request.path|active:'index' }}">
             <a class="nav-link" href="{% url 'index' %}">Home <span class="sr-only">(current)</span></a>
           </li>
 
-            <li class="nav-item">
+            <li class="nav-item {{ request.path|active:'rate:list' }}">
                 <a class="nav-link" href="{% url 'rate:list' %}">Rates</a>
+            </li>
+
+            <li class="nav-item {{ request.path|active:'rate:latest-rates' }}">
+                <a class="nav-link" href="{% url 'rate:latest-rates' %}">Latest Rates</a>
             </li>
 
           {% if request.user.is_authenticated %}
