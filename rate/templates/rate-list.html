@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Exchangers</th>
+      <th scope="col">$</th>
+      <th scope="col">€</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>PrivatBank</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Monobank</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>VKurse</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+      <td>{{ rate.buy }}buy/{{ rate.sale }}sale</td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock content %}
+

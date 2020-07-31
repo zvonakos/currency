@@ -1,5 +1,5 @@
-import os
-from celery.schedules import crontab
+import os  # noqa
+from celery.schedules import crontab  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_extensions',
+    'debug_toolbar',
 
     'account',
     'rate',
@@ -30,6 +31,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'Currency.urls'
@@ -74,8 +76,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -100,3 +100,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute='*/15')
     },
 }
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

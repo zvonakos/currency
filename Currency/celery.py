@@ -1,5 +1,5 @@
-import os
-from celery import Celery
+import os  # noqa
+from celery import Celery  # noqa
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Currency.settings')
 
