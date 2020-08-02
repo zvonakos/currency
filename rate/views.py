@@ -2,7 +2,8 @@ import csv  # noqa
 import xlsxwriter  # noqa
 
 from django.http import HttpResponse  # noqa
-from django.views.generic import ListView, View, TemplateView  # noqa
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, ListView, TemplateView, UpdateView, View
 
 from rate.models import Rate  # noqa
 from rate.selectors import get_latest_rates
@@ -11,6 +12,7 @@ from rate import model_choices as mch  # noqa
 
 
 class RateList(ListView):
+    paginate_by = 24
     queryset = Rate.objects.all()
     template_name = 'rate-list.html'
 
@@ -90,3 +92,18 @@ class RateDownloadXLSX(View):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = "attachment; filename=rates.xlsx"
         return response
+
+
+class EditRate(UpdateView):
+    template_name = 'edit-rate.html'
+    model = Rate
+    fields = 'rate', 'source', 'currency_type', 'rate_type'
+    success_url = reverse_lazy('rate:rate_list')
+
+
+class DeleteRate(DeleteView):
+    model = Rate
+    success_url = reverse_lazy('rate:rate_list')
+
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)

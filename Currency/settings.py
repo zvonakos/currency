@@ -1,6 +1,8 @@
 import os  # noqa
 from celery.schedules import crontab  # noqa
 
+from django.urls import reverse_lazy
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'krne$j#+#c&tzxe_x96est8c*63s$9t6wbt=ewi6gih7&dbj)w'
@@ -18,6 +20,7 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'debug_toolbar',
+    'crispy_forms',
 
     'account',
     'rate',
@@ -113,3 +116,17 @@ CELERY_BEAT_SCHEDULE = {
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+LOGIN_REDIRECT_URL = reverse_lazy('index')
+LOGOUT_REDIRECT_URL = reverse_lazy('index')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'testdjangohillel@gmail.com'
+EMAIL_HOST_PASSWORD = 'hilleldjango2020'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
