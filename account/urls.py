@@ -1,5 +1,5 @@
 from account import views  # noqa
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView  # noqa
 from django.urls import path  # noqa
 
 

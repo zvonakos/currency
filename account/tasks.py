@@ -7,9 +7,9 @@ from django.core.mail import send_mail
 @shared_task
 def send_email_async(data: dict):
     send_mail(
-    data['subject'],
-    data['message'],
-    data['email_from'],
-    [settings.DEFAULT_FROM_EMAIL],
-    fail_silently=False,
+        data['subject'],
+        data['message'],
+        data['email_from'],
+        [settings.DEFAULT_FROM_EMAIL],
+        fail_silently=False,
     )

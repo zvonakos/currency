@@ -1,5 +1,5 @@
-import re
 import csv
+import re
 
 PATH = './nginx.log'
 

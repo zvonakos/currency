@@ -1,10 +1,10 @@
-from django.http import HttpResponse
-from account.models import Contact,User
-from account.tasks import send_email_async
+from account.models import Contact, User  # noqa
+from account.tasks import send_email_async  # noqa
+from django.http import HttpResponse  # noqa
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin  # noqa
+from django.urls import reverse_lazy  # noqa
+from django.views.generic import CreateView, UpdateView  # noqa
 
 
 def smoke(request):
@@ -32,4 +32,3 @@ class MyProfile(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         obj = self.get_queryset().get(id=self.request.user.id)
         return obj
-
