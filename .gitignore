@@ -1,0 +1,9 @@
+../.idea/
+../env/
+__pyache__/
+*.pyc
+*.log
+README.md/
+celerybeat-schedule
+celerybeat.pid
+settings_local.py
