@@ -1,4 +1,5 @@
 from account.tokens import account_activation_token
+from account.models import User  # noqa
 
 from celery import shared_task
 
@@ -21,23 +22,20 @@ def send_email_async(data: dict):
 
 
 def send_sign_up_email(user_id):
+    user = User.objects.get(id=user_id)  # noqa
+    title = 'Sign up'  # noqa
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = account_activation_token.make_token(user)
 
-   from account.models import User
+    path = reverse('account:activate', args=(uid, token))
+    url = 'http://127.0.0.1:8000' + path
 
-   user = User.objects.get(id=user_id)
-   title = 'Sign up'
-   uid = urlsafe_base64_encode(force_bytes(user.pk))
-   token = account_activation_token.make_token(user)
+    message = f'Your Activation Url: {url}'
 
-   path = reverse('account:activate', args=(uid, token))
-   url = 'http://127.0.0.1:8000' + path
-
-   message = f'Your Activation Url: {url}'
-
-   send_mail(
-       title,
-       message,
-       settings.DEFAULT_FROM_EMAIL,
-       [user.email],
-       fail_silently=False,
-   )
+    send_mail(
+        title,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        fail_silently=False,
+    )
