@@ -1,4 +1,4 @@
-from Currency.settings import *
+from Currency.settings import *  # noqa
 
 SECRET_KEY = 'krne$j#+#c&tzxe_x96est8c*63s$9t6wbt=ewi6gih7&dbj)w'
 DEBUG = False
@@ -9,7 +9,7 @@ CELERY_ALWAYS_EAGER = CELERY_TASK_ALWAYS_EAGER = True  # run celery tasks as fun
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db-test.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db-test.sqlite3'),  # noqa
     }
 }
 
