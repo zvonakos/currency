@@ -7,8 +7,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'krne$j#+#c&tzxe_x96est8c*63s$9t6wbt=ewi6gih7&dbj)w'
 
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -120,13 +120,10 @@ INTERNAL_IPS = [
 LOGIN_REDIRECT_URL = reverse_lazy('index')
 LOGOUT_REDIRECT_URL = reverse_lazy('index')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'testdjangohillel@gmail.com'
-EMAIL_HOST_PASSWORD = 'hilleldjango2020'
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+try:
+    from settings.settings_local import *  # noqa
+except ImportError:
+    print('ImportError settings_local\n')  # noqa
