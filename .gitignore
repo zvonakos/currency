@@ -7,3 +7,6 @@ README.md/
 celerybeat-schedule
 celerybeat.pid
 settings_local.py
+*.sqlite3
+*.db
+*.json
